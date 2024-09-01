@@ -1,0 +1,6 @@
+torch
+langchain
+ctransformers
+chainlit
+langchain_community
+langchain-community
