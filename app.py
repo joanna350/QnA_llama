@@ -1,8 +1,10 @@
 import os
 import chainlit as cl
+
 from langchain_community.llms import CTransformers
 from langchain_core.prompts import PromptTemplate
-from langchain.chains import LLMChain
+from pymongo_get_database import get_database
+
 
 llm = "TheBloke/zephyr-7B-beta-GGUF"  # model to download from
 
@@ -28,6 +30,8 @@ template = """Question: {question}
 Response: Please stay factual and omit fiction.
 """
 
+db = get_database()
+
 @cl.on_chat_start
 def main():
     prompt = PromptTemplate(template=template, input_variables=['question'])
@@ -37,5 +41,17 @@ def main():
 @cl.on_message
 async def main(message: str):
     llm_chain = cl.user_session.get("llm_chain")
-    res = await llm_chain.ainvoke(message.content)
-    await cl.Message(content=res).send()
+    dbresponse = db.collection.find({'question': message.content})
+    try:
+        # if the question is revistited
+        res = dbresponse[0]['response']
+
+    except Exception as e:
+        # when new, use llm chain
+        res = await llm_chain.ainvoke(message.content)
+
+        # update the database
+        await db.collection.insert_one({'question': message.content,
+                                        'response': res})
+    finally:
+        await cl.Message(content=res).send()

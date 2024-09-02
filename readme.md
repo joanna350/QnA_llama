@@ -13,7 +13,11 @@ The short script generates question-answering interface that leverages on recent
    python -m pip install -r requirements.txt
    ```
 
-2. Run
+2. Start MongoDB (currently setup for ubuntu)
+
+- may have to change the DNS for other OS
+
+3. Run
    ```
    chainlit run app.py
    ```

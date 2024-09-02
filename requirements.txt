@@ -4,3 +4,4 @@ ctransformers
 chainlit
 langchain_community
 langchain-community
+pymongo
