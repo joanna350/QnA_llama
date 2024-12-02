@@ -30,7 +30,6 @@ template = """Question: {question}
 Response: Please stay factual and omit fiction.
 """
 
-db = get_database()
 
 @cl.on_chat_start
 def main():
@@ -40,8 +39,10 @@ def main():
 
 @cl.on_message
 async def main(message: str):
+    db = get_database()
+    collection = db.collection
     llm_chain = cl.user_session.get("llm_chain")
-    dbresponse = db.collection.find({'question': message.content})
+    dbresponse = collection.find({'question': message.content})
     try:
         # if the question is revistited
         res = dbresponse[0]['response']
@@ -50,8 +51,8 @@ async def main(message: str):
         # when new, use llm chain
         res = await llm_chain.ainvoke(message.content)
 
-        # update the database
-        await db.collection.insert_one({'question': message.content,
-                                        'response': res})
+        # update the database using the async function (todo)
+        await collection.insert_one({'question': message.content,
+                                       'response': res})
     finally:
         await cl.Message(content=res).send()
