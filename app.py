@@ -3,6 +3,7 @@ import chainlit as cl
 
 from langchain_community.llms import CTransformers
 from langchain_core.prompts import PromptTemplate
+from langchain import LLMChain
 from pymongo_get_database import get_database
 
 
@@ -20,6 +21,7 @@ config = {
 
 llm_init = CTransformers(
     model=llm,
+    model_file="zephyr-7b-beta.Q8_0.gguf",
     model_type="zephyr",
     lib="avx2",
     **config
@@ -34,7 +36,7 @@ Response: Please stay factual and omit fiction.
 @cl.on_chat_start
 def main():
     prompt = PromptTemplate(template=template, input_variables=['question'])
-    llm_chain = prompt | llm_init
+    llm_chain = LLMChain(prompt=prompt, llm=llm_init, verbose=True)
     cl.user_session.set("llm_chain", llm_chain)
 
 @cl.on_message

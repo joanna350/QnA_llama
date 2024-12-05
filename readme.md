@@ -19,7 +19,7 @@ The short script generates question-answering interface that leverages on recent
 
 3. Run
    ```
-   chainlit run app.py
+   (python -m) chainlit run app.py
    ```
 
 **Notes**
