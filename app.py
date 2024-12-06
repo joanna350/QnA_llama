@@ -32,24 +32,31 @@ template = """Question: {question}
 Response: Please stay factual and omit fiction.
 """
 
+db = get_database()
+collection = db.collection
 
 @cl.on_chat_start
 def main():
     prompt = PromptTemplate(template=template, input_variables=['question'])
-    llm_chain = LLMChain(prompt=prompt, llm=llm_init, verbose=True)
+    llm_chain = prompt | llm_init #LLMChain(prompt=prompt, llm=llm_init, verbose=True)
     cl.user_session.set("llm_chain", llm_chain)
 
 @cl.on_message
 async def main(message: str):
-    db = get_database()
-    collection = db.collection
+
     llm_chain = cl.user_session.get("llm_chain")
-    dbresponse = collection.find({'question': message.content})
+
+    in_collection = await collection.find_one({'question': message.content})
+
     try:
         # if the question is revistited
-        res = dbresponse[0]['response']
+        res = in_collection['response']
 
     except Exception as e:
+
+        #debug purpose
+        print(e)
+
         # when new, use llm chain
         res = await llm_chain.ainvoke(message.content)
 

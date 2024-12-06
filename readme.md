@@ -13,9 +13,9 @@ The short script generates question-answering interface that leverages on recent
    python -m pip install -r requirements.txt
    ```
 
-2. Start MongoDB (currently setup for ubuntu)
+2. Install and Start MongoDB
 
-- may have to change the DNS for other OS
+- change the DNS adequate to each OS
 
 3. Run
    ```
@@ -37,4 +37,4 @@ The short script generates question-answering interface that leverages on recent
 **Demo**
 ![run.png](img/run2.png)
 
-- time taken: 1 minute +/- 30 seconds depending on the prompt
+- time taken: 1 minute +/- 30 seconds depending on the prompt for new questions
