@@ -27,9 +27,7 @@ llm_init = CTransformers(
     **config
 )
 
-template = """Question: {question}
-
-Response: Please stay factual and omit fiction.
+template = """Question: {question}. Please stay factual and omit fiction in response. Cite when you can.
 """
 
 db = get_database()
@@ -48,20 +46,15 @@ async def main(message: str):
 
     in_collection = await collection.find_one({'question': message.content})
 
-    try:
+    if in_collection is not None:
         # if the question is revistited
         res = in_collection['response']
 
-    except Exception as e:
-
-        #debug purpose
-        print(e)
-
+    else:
         # when new, use llm chain
         res = await llm_chain.ainvoke(message.content)
 
-        # update the database using the async function (todo)
         await collection.insert_one({'question': message.content,
                                        'response': res})
-    finally:
-        await cl.Message(content=res).send()
+
+    await cl.Message(content=res).send()
